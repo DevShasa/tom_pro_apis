@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express"
 import {AnyZodObject} from "zod" 
 
 
+// function takes in a zod schema as a parameter 
 const validate = (schema:AnyZodObject) =>{
     return (req:Request, res:Response, next:NextFunction)=>{
         try {

@@ -12,12 +12,12 @@ export interface UserInput{
 export interface UserDocument extends UserInput,  mongoose.Document{
     createdAt: Date,
     updatedAt: Date,
-    comparePassword(userEnteredPassword:string):Promise<boolean>
+    comparePasswords(userEnteredPassword:string):Promise<boolean>
 }
 
 
 // schema definition
-const userSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     email:{type: String, required: true, unique:true},
     name:{type: String, required: true,},
     password:{type: String, required: true,}
@@ -26,8 +26,8 @@ const userSchema = new mongoose.Schema({
 })
 
 // pre  save hook to hash password
-userSchema.pre("save", async(next)=>{
-    let user = this as unknown as UserDocument
+UserSchema.pre("save", async function(next){
+    let user = this as UserDocument
 
     if(!user?.isModified("password")){
         // user has not been modified
@@ -44,14 +44,14 @@ userSchema.pre("save", async(next)=>{
 
 
 // compare password when user logs in
-userSchema.methods.comparePasswords = async(userEnteredPassword:string):Promise<boolean>=>{
-    const user = this as unknown as UserDocument
+UserSchema.methods.comparePasswords = async function(userEnteredPassword:string):Promise<boolean>{
+    const user = this as UserDocument
 
     // return true if match, otherwise will throw error
-    return bcrypt.compare(userEnteredPassword, user.password).catch(e=>{return false})
+    return bcrypt.compare(userEnteredPassword, user.password).catch(e=> false)
 }
 
 // model
-const UserModel = mongoose.model("User,", userSchema)
+const UserModel = mongoose.model("User,", UserSchema)
 export default UserModel;
 
